@@ -35,7 +35,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pool")
 	float spawnSpeed = 1;
 	
-	void PrintPoolStats();
 	FTimerHandle TimerHandle;
 	void SpawnItem();
 };

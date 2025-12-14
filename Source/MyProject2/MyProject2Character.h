@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "ObjectPool/ObjectPoolSubsystem.h"
 #include "MyProject2Character.generated.h"
 
 class UInputComponent;
@@ -90,8 +91,30 @@ public:
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 	
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual void BeginPlay() override;
+	
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void PrintPool();
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shooting")
+	float fireRate = 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shooting")
+	TSubclassOf<AActor> projectile;
+	
+	UFUNCTION(BlueprintCallable, Category="Shooting")
+	void TryShoot();
+	
+	void Shoot();
+	void Cooldown(float deltatime);
+	float counter = 0;
+	bool canShoot = false;
+	
+	UObjectPoolSubsystem* PoolSubsystem;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shooting")
+	int poolSize = 10;
 };
 

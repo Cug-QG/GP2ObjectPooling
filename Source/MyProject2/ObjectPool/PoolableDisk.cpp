@@ -31,6 +31,7 @@ void APoolableDisk::NativeActive(FObjectPoolActivationData ObjectPoolData)
 	IObjectPoolInterface::NativeActive(ObjectPoolData);
 	
 	SetActorLocation(ObjectPoolData.ObjectPoolTransform.GetLocation());
+	SetActorRotation(ObjectPoolData.ObjectPoolTransform.GetRotation());
 	SetActorTickEnabled(true);
 	
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();

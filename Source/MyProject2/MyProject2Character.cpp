@@ -9,7 +9,6 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MyProject2.h"
-#include "ObjectPool/ObjectPoolSubsystem.h"
 
 struct FObjectPool;
 
@@ -69,12 +68,29 @@ void AMyProject2Character::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	}
 }
 
+void AMyProject2Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	if (!canShoot)
+	{
+		Cooldown(DeltaTime);
+	}
+}
+
+void AMyProject2Character::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	PoolSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UObjectPoolSubsystem>();
+	PoolSubsystem->AddPool(projectile, poolSize);
+}
+
 void AMyProject2Character::PrintPool()
 {
 	if (!GEngine) return;
 
 	int32 KeyIndex = 500;
-	UObjectPoolSubsystem* PoolSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UObjectPoolSubsystem>();
 	// Scorriamo tutta la mappa delle pool
 	for (const auto& Pair : PoolSubsystem->ObjectPoolMap)
 	{
@@ -107,6 +123,34 @@ void AMyProject2Character::PrintPool()
 
 		// Incrementiamo la Key per la prossima classe nella mappa (così ognuna ha la sua riga)
 		KeyIndex++;
+	}
+}
+
+void AMyProject2Character::TryShoot()
+{
+	if (canShoot)
+	{
+		Shoot();
+	}
+}
+
+void AMyProject2Character::Shoot()
+{
+	canShoot = false;
+	FObjectPoolActivationData data;
+	data.ObjectPoolTransform = this->GetTransform();
+	TScriptInterface<IObjectPoolInterface> diskInstance = PoolSubsystem->GetObjectFromPool(projectile);
+	diskInstance.GetInterface()->Active(data);
+}
+
+void AMyProject2Character::Cooldown(float deltatime)
+{
+	counter += deltatime;
+	
+	if (counter >= 1/fireRate)
+	{
+		counter = 0;
+		canShoot = true;
 	}
 }
 

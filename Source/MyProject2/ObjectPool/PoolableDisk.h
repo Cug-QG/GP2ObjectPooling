@@ -26,15 +26,16 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void NativeActive(FObjectPoolActivationData ObjectPoolData) override;
-	
-	virtual void NativeDeactive(FObjectPoolDeactivationData ObjectPoolData) override;
+    	
+    virtual void NativeDeactive(FObjectPoolDeactivationData ObjectPoolData) override;
 
-	UPROPERTY(EditAnywhere, Category = "Settings")
-	float lifeTime = 2;
+    UPROPERTY(EditAnywhere, Category = "Settings")
+    float lifeTime = 2;
 
-	FTimerHandle TimerHandle;
-	
-	UObjectPoolSubsystem* PoolSubsystem;
+    FTimerHandle TimerHandle;
+    
+    UObjectPoolSubsystem* PoolSubsystem;
+
 	
 	UPROPERTY(EditAnywhere, Category = "Settings")
 	float speed = 100;
