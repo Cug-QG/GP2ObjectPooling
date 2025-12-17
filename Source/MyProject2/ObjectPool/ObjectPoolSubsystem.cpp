@@ -10,6 +10,11 @@ void UObjectPoolSubsystem::AddPool(TSubclassOf<AActor> ClassPool, int32 InitialS
 		return;
 	}
 	
+	if (!ClassPool->ImplementsInterface(UObjectPoolInterface::StaticClass()))
+	{
+		return;
+	}
+
 	if (ObjectPoolMap.Contains(ClassPool))
 	{
 		return;
@@ -17,7 +22,6 @@ void UObjectPoolSubsystem::AddPool(TSubclassOf<AActor> ClassPool, int32 InitialS
 	
 	FObjectPool ObjectPoolToCreate;
 
-	// Se vogliamo aggiungere piu' parametri per lo spawn
 	FActorSpawnParameters SpawnParameters;
 
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -37,19 +41,9 @@ void UObjectPoolSubsystem::AddPool(TSubclassOf<AActor> ClassPool, int32 InitialS
 
 TScriptInterface<IObjectPoolInterface> UObjectPoolSubsystem::GetObjectFromPool(TSubclassOf<AActor> ClassPool)
 {
-	if (!GetWorld())
-	{
-		return nullptr;
-	}
-
-	if (!ObjectPoolMap.Contains(ClassPool))
-	{
-		return nullptr;
-	}
+	if (!CheckValidity(ClassPool)) return nullptr;
 
 	FObjectPool* PoolObject = ObjectPoolMap.Find(ClassPool);
-
-	//ObjectPoolMap.FindOrAdd()
 
 	TScriptInterface<IObjectPoolInterface> ActorToReturn;
 
@@ -80,15 +74,7 @@ TScriptInterface<IObjectPoolInterface> UObjectPoolSubsystem::GetObjectFromPool(T
 void UObjectPoolSubsystem::ReturnObjectToPool(TSubclassOf<AActor> ClassPool,
 	TScriptInterface<IObjectPoolInterface> ActorToReturn)
 {
-	if (!GetWorld())
-	{
-		return;
-	}
-
-	if (!ObjectPoolMap.Contains(ClassPool))
-	{
-		return;
-	}
+	if (!CheckValidity(ClassPool)) return;
 
 	FObjectPool* PoolObject = ObjectPoolMap.Find(ClassPool);
 
@@ -102,6 +88,26 @@ void UObjectPoolSubsystem::ReturnObjectToPool(TSubclassOf<AActor> ClassPool,
 
 	// return back to being use in the pool of usable objects
 	PoolObject->UsablePoolingObjects.AddUnique(ActorToReturn);
+}
+
+bool UObjectPoolSubsystem::CheckValidity(TSubclassOf<AActor> ClassPool)
+{
+	if (!GetWorld())
+	{
+		return false;
+	}
+	
+	if (!ClassPool->ImplementsInterface(UObjectPoolInterface::StaticClass()))
+	{
+		return false;
+	}
+
+	if (!ObjectPoolMap.Contains(ClassPool))
+	{
+		return false;
+	}
+	
+	return true;
 }
 
 

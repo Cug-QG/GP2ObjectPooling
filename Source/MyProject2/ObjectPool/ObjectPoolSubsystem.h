@@ -45,4 +45,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Object Pool SubSystem")
 	void ReturnObjectToPool(TSubclassOf<AActor> ClassPool, TScriptInterface<IObjectPoolInterface> ActorToReturn);
+	
+	bool CheckValidity(TSubclassOf<AActor> ClassPool);
 };

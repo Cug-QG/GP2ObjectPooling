@@ -91,10 +91,9 @@ void AMyProject2Character::PrintPool()
 	if (!GEngine) return;
 
 	int32 KeyIndex = 500;
-	// Scorriamo tutta la mappa delle pool
+
 	for (const auto& Pair : PoolSubsystem->ObjectPoolMap)
 	{
-		// Recuperiamo i dati
 		TSubclassOf<AActor> ClassKey = Pair.Key;
 		const FObjectPool& PoolData = Pair.Value;
 
@@ -102,18 +101,13 @@ void AMyProject2Character::PrintPool()
 		int32 FreeCount = PoolData.UsablePoolingObjects.Num();
 		int32 TotalCount = ActiveCount + FreeCount;
         
-		// Creiamo la stringa formattata
-		// *ClassKey->GetName() ottiene il nome della classe come stringa
 		FString Msg = FString::Printf(TEXT("Classe: %s || Attivi: %d || Pullabili: %d || Totale: %d"), 
 			*ClassKey->GetName(), 
 			ActiveCount, 
 			FreeCount, 
 			TotalCount
 		);
-
-		// STAMPA A SCHERMO
-		// Parametro 1 (Key): KeyIndex (Un numero fisso per ogni riga, così si aggiorna senza spam)
-		// Parametro 2 (Time): 0.0f (Dura solo 1 frame, perfetto per il Tick)
+		
 		GEngine->AddOnScreenDebugMessage(
 			KeyIndex, 
 			0.0f, 
@@ -140,6 +134,7 @@ void AMyProject2Character::Shoot()
 	FObjectPoolActivationData data;
 	data.ObjectPoolTransform = this->GetTransform();
 	TScriptInterface<IObjectPoolInterface> diskInstance = PoolSubsystem->GetObjectFromPool(projectile);
+	if (!diskInstance) return;
 	diskInstance.GetInterface()->Active(data);
 }
 

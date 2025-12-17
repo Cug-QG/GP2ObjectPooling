@@ -43,6 +43,7 @@ void ADiskThrower::SpawnItem()
 	FObjectPoolActivationData data;
 	data.ObjectPoolTransform = this->GetTransform();
 	TScriptInterface<IObjectPoolInterface> diskInstance = PoolSubsystem->GetObjectFromPool(disk);
+	if (!diskInstance) return;
 	diskInstance.GetInterface()->Active(data);
 }
 
